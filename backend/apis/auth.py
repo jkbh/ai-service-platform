@@ -16,7 +16,7 @@ from backend.core.models import User, Source, Role
 
 from . import ma
 
-bp = Blueprint('auth', __name__, url_prefix='/auth')
+bp = Blueprint("auth", __name__, url_prefix="/auth")
 
 
 class LoginArgsSchema(ma.Schema):
@@ -47,16 +47,15 @@ def get_user_from_token(token: str) -> Optional[User]:
     """
 
     try:
-        data = jwt.decode(
-            token, current_app.config['SECRET_KEY'], algorithms=['HS256'])
+        data = jwt.decode(token, current_app.config["SECRET_KEY"], algorithms=["HS256"])
     except jwt.ExpiredSignatureError:
         return None
 
     # TODO: right now, a source is considered to be the same as a user -> both need a role entry,
     #  even though this does not make sense for a source
-    user = Source.query.filter_by(public_id=data['public_id']).first()
+    user = Source.query.filter_by(public_id=data["public_id"]).first()
     if not user:
-        user = User.query.filter_by(public_id=data['public_id']).first()
+        user = User.query.filter_by(public_id=data["public_id"]).first()
 
     return user
 
@@ -69,10 +68,10 @@ def token_required(f):
 
     @wraps(f)
     def decorated(*args, **kwargs):
-        if 'x-access-token' in request.headers:
-            token = request.headers['x-access-token']
+        if "x-access-token" in request.headers:
+            token = request.headers["x-access-token"]
         else:
-            token = request.cookies.get('token')
+            token = request.cookies.get("token")
 
         if not token:
             abort(400, message="Token missing")
@@ -112,7 +111,7 @@ def roles_required(allowed: List[Role]):
     return decorator
 
 
-@bp.route('/login')
+@bp.route("/login")
 class Login(MethodView):
     @bp.arguments(LoginArgsSchema)
     @bp.response(200, TokenSchema)
@@ -120,12 +119,12 @@ class Login(MethodView):
         response = create_basic_auth_login_response(data)
 
         if not response:
-            abort(400, message='Could not login')
+            abort(400, message="Could not login")
 
         return response
 
 
-@bp.route('/status')
+@bp.route("/status")
 class Status(MethodView):
     @bp.response(200, StatusSchema)
     @token_required
@@ -133,37 +132,45 @@ class Status(MethodView):
         return g.user
 
 
-@bp.route('/logout')
+@bp.route("/logout")
 class Logout(MethodView):
     @bp.response(200)
     def post(self):
         @after_this_request
         def delete_token_cookie(response):
-            response.delete_cookie('token')
+            response.delete_cookie("token")
             return response
 
-        return {'message': 'Logged out!'}
+        return {"message": "Logged out!"}
 
 
 def create_basic_auth_login_response(login_data: Dict):
-    user = User.query.filter_by(name=login_data['name']).first()
+    user = User.query.filter_by(name=login_data["name"]).first()
     if not user:
-        user = Source.query.filter_by(name=login_data['name']).first()
+        user = Source.query.filter_by(name=login_data["name"]).first()
 
     if not user:
         return
 
     # hash public_id & expire date into token (currently 30 days)
-    if check_password_hash(user.password, login_data['password']):
+    if check_password_hash(user.password, login_data["password"]):
         token = jwt.encode(
-            {'public_id': user.public_id, 'source': False, 'exp': datetime.datetime.utcnow() + datetime.timedelta(30)},
-            current_app.config['SECRET_KEY'], algorithm='HS256')
+            {
+                "public_id": user.public_id,
+                "source": False,
+                "exp": datetime.datetime.now(datetime.timezone.utc)
+                + datetime.timedelta(30),
+            },
+            current_app.config["SECRET_KEY"],
+            algorithm="HS256",
+        )
 
-        use_cookie = login_data.get('use_cookie') or None
+        use_cookie = login_data.get("use_cookie") or None
         if use_cookie:
-            response = jsonify({'role': user.role.name.lower()})
-            response.set_cookie('token', token, secure=True,
-                                httponly=True, samesite='Strict')
+            response = jsonify({"role": user.role.name.lower()})
+            response.set_cookie(
+                "token", token, secure=True, httponly=True, samesite="Strict"
+            )
             return response
         else:
-            return {'token': token, 'role': user.role}
+            return {"token": token, "role": user.role}

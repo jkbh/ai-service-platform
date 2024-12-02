@@ -13,7 +13,7 @@ from backend.core import models
 from backend.core.models import Role
 from .auth import roles_required
 
-bp = Blueprint('source', __name__, url_prefix='/source')
+bp = Blueprint("source", __name__, url_prefix="/source")
 
 
 class SourceSchema(ma.SQLAlchemyAutoSchema):
@@ -25,20 +25,20 @@ class SourceSchema(ma.SQLAlchemyAutoSchema):
 
     @pre_load
     def fill_missing_data(self, data, **kwargs):
-        if 'public_id' not in data:
-            data['public_id'] = str(uuid.uuid4())
-        if 'owner_id' not in data:
-            data['owner_id'] = g.user.public_id
-        data['role'] = 'SOURCE'
+        if "public_id" not in data:
+            data["public_id"] = str(uuid.uuid4())
+        if "owner_id" not in data:
+            data["owner_id"] = g.user.public_id
+        data["role"] = "SOURCE"
         return data
 
     @post_load
     def hash_password(self, data, **kwargs):
-        data['password'] = generate_password_hash(data['password'], method='sha256')
+        data["password"] = generate_password_hash(data["password"])
         return data
 
 
-@bp.route('')
+@bp.route("")
 class SourceList(MethodView):
     @roles_required([Role.USER2])
     @bp.response(200, SourceSchema(many=True))
@@ -58,7 +58,7 @@ class SourceList(MethodView):
         return source
 
 
-@bp.route('/<public_id>')
+@bp.route("/<public_id>")
 class Source(MethodView):
     @roles_required([Role.ADMIN, Role.USER2])
     @bp.response(200, SourceSchema)
@@ -66,7 +66,7 @@ class Source(MethodView):
         source = db.session.get(models.Source, public_id)
 
         if not source:
-            abort(404, 'Could not delete source')
+            abort(404, "Could not delete source")
 
         db.session.delete(source)
         db.session.commit()

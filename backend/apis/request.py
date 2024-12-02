@@ -16,7 +16,7 @@ from backend.core.request_handler import process_request
 
 from .auth import roles_required
 
-bp = Blueprint('request', __name__, url_prefix='/request')
+bp = Blueprint("request", __name__, url_prefix="/request")
 
 
 class BytesField(fields.Field):
@@ -25,13 +25,13 @@ class BytesField(fields.Field):
     def _serialize(self, value, attr, obj, **kwargs):
         if value is None:
             return ""
-        return base64.b64encode(value).decode('utf-8')
+        return base64.b64encode(value).decode("utf-8")
 
     def _deserialize(self, value, attr, obj, **kwargs):
         try:
             return base64.b64decode(value)
         except ValueError as error:
-            raise ValidationError('Could not deserialize base64 string') from error
+            raise ValidationError("Could not deserialize base64 string") from error
 
 
 class RequestSchema(ma.SQLAlchemyAutoSchema):
@@ -44,35 +44,37 @@ class RequestSchema(ma.SQLAlchemyAutoSchema):
 
     @pre_load
     def create_uuid(self, data, **kwargs):
-        if 'public_id' not in data:
-            data['public_id'] = str(uuid4())
+        if "public_id" not in data:
+            data["public_id"] = str(uuid4())
         return data
 
     @pre_load
     def set_status(self, data, **kwargs):
-        if 'status' not in data:
-            data['status'] = RequestStatus.PENDING.name
+        if "status" not in data:
+            data["status"] = RequestStatus.PENDING.name
         return data
 
     @pre_load
     def set_user_source(self, data, **kwargs):
         if g.user.role == Role.SOURCE:
             # Set user to the owner of the source that sent the request,
-            data['user_id'] = g.user.owner_id
-            data['source_id'] = g.user.public_id
+            data["user_id"] = g.user.owner_id
+            data["source_id"] = g.user.public_id
         else:
             # Set user to request sender
-            data['user_id'] = g.user.public_id
+            data["user_id"] = g.user.public_id
         return data
 
     @post_dump
     def status_to_lowercase(self, data, **kwargs):
-        if 'status' in data:
-            data['status'] = data['status'].lower()  # temporary workaround for client compatibility
+        if "status" in data:
+            data["status"] = data[
+                "status"
+            ].lower()  # temporary workaround for client compatibility
         return data
 
 
-@bp.route('')
+@bp.route("")
 class RequestList(MethodView):
     @roles_required([Role.ADMIN, Role.USER1, Role.USER2])
     @bp.response(200, RequestSchema(many=True))
@@ -92,10 +94,10 @@ class RequestList(MethodView):
         else:
             user = g.user
 
-        model = db.session.get(models.Model, data['model_id'])
+        model = db.session.get(models.Model, data["model_id"])
 
         if not model:
-            abort(404, 'Model not found')
+            abort(404, "Model not found")
 
         request = models.Request(**data, user=user, source=source, model=model)
         request_id = request.public_id
@@ -107,13 +109,13 @@ class RequestList(MethodView):
             """Wrapper to process requests in parallel while staying in the same request context"""
             process_request(public_id)
 
-        thread = Thread(target=process, kwargs={'public_id': request_id})
+        thread = Thread(target=process, kwargs={"public_id": request_id})
         thread.start()
 
         return request
 
 
-@bp.route('/<public_id>')
+@bp.route("/<public_id>")
 class Request(MethodView):
     @roles_required([Role.USER1, Role.USER2])
     @bp.response(200, RequestSchema)
@@ -121,10 +123,10 @@ class Request(MethodView):
         request = db.session.get(models.Request, public_id)
 
         if not request:
-            abort(404, message='Could not find request')
+            abort(404, message="Could not find request")
 
         if request not in g.user.requests:
-            abort(403, message='Not allowed')
+            abort(403, message="Not allowed")
 
         return request
 
@@ -134,10 +136,10 @@ class Request(MethodView):
         request = db.session.get(models.Request, public_id)
 
         if not request:
-            abort(404, message='Could not find request')
+            abort(404, message="Could not find request")
 
         if request not in g.user.requests:
-            abort(403, message='Could not delete request')
+            abort(403, message="Could not delete request")
 
         db.session.delete(request)
         db.session.commit()
