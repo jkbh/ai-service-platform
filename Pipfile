@@ -1,0 +1,25 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+coverage = "*"
+autopep8 = "*"
+pytest = "*"
+
+[packages]
+pyjwt = "*"
+pillow = "*"
+numpy = "*"
+keras = "*"
+tensorflow = "*"
+flask-sqlalchemy = "*"
+flask-smorest = "*"
+flask = "*"
+flask-marshmallow = "*"
+marshmallow-sqlalchemy = "*"
+marshmallow-enum = "*"
+
+[requires]
+python_version = "3.9"
