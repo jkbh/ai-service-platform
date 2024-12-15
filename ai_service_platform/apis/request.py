@@ -9,10 +9,10 @@ from marshmallow import pre_load, fields, ValidationError, post_dump
 from marshmallow_enum import EnumField
 
 from . import ma
-from backend.core import db
-from backend.core import models
-from backend.core.models import Role, RequestStatus
-from backend.core.request_handler import process_request
+from ai_service_platform.core import db
+from ai_service_platform.core import models
+from ai_service_platform.core.models import Role, RequestStatus
+from ai_service_platform.core.request_handler import process_request
 
 from .auth import roles_required
 

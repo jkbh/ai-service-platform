@@ -8,9 +8,9 @@ import uuid
 from werkzeug.security import generate_password_hash
 
 from . import ma
-from backend.core import db
-from backend.core import models
-from backend.core.models import Role
+from ai_service_platform.core import db
+from ai_service_platform.core import models
+from ai_service_platform.core.models import Role
 from .auth import roles_required
 
 bp = Blueprint("source", __name__, url_prefix="/source")

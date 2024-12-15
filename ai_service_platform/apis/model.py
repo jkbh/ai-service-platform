@@ -3,8 +3,8 @@ from flask_smorest import Blueprint
 
 from . import ma
 from .auth import roles_required
-from backend.core import models
-from backend.core.models import Role
+from ai_service_platform.core import models
+from ai_service_platform.core.models import Role
 
 bp = Blueprint('model', __name__, url_prefix='/model')
 

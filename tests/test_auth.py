@@ -1,6 +1,6 @@
 from werkzeug.exceptions import HTTPException
 import pytest
-from backend.apis.auth import *
+from ai_service_platform.apis.auth import *
 from tests.conftest import USER1_ID
 import datetime
 import jwt

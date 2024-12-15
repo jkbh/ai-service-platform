@@ -8,9 +8,9 @@ from marshmallow import pre_load, post_load
 from marshmallow_enum import EnumField
 
 from . import ma
-from backend.core import db
-from backend.core import models
-from backend.core.models import Role
+from ai_service_platform.core import db
+from ai_service_platform.core import models
+from ai_service_platform.core.models import Role
 from .auth import roles_required
 
 

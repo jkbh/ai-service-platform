@@ -6,9 +6,9 @@ from werkzeug.security import generate_password_hash
 
 import pytest
 
-from backend import create_app
-from backend.core import db, models
-from backend.core.models import Role, RequestStatus
+from ai_service_platform import create_app
+from ai_service_platform.core import db, models
+from ai_service_platform.core.models import Role, RequestStatus
 
 ADMIN_ID = '7cb6e818-45f0-482e-90af-e35d2f56fbfd'
 USER1_ID = 'c8572b62-c5f4-419d-8744-dbee83c1ee58'

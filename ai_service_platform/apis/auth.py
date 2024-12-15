@@ -11,7 +11,7 @@ from functools import wraps
 import jwt
 import datetime
 
-from backend.core.models import User, Source, Role
+from ai_service_platform.core.models import User, Source, Role
 
 from . import ma
 
