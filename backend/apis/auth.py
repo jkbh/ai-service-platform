@@ -1,6 +1,5 @@
 from typing import Dict, Optional, List
 
-import flask
 from flask import request, current_app, g, after_this_request
 from flask.json import jsonify
 from flask.views import MethodView

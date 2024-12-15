@@ -15,6 +15,51 @@ wheels = [
 ]
 
 [[package]]
+name = "ai-service-platform"
+version = "0.1.0"
+source = { editable = "." }
+dependencies = [
+    { name = "flask" },
+    { name = "flask-marshmallow" },
+    { name = "flask-smorest" },
+    { name = "flask-sqlalchemy" },
+    { name = "keras" },
+    { name = "marshmallow-enum" },
+    { name = "marshmallow-sqlalchemy" },
+    { name = "pillow" },
+    { name = "pyjwt" },
+    { name = "tensorflow-cpu" },
+    { name = "waitress" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "coverage" },
+    { name = "pytest" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "flask", specifier = ">=3.1.0" },
+    { name = "flask-marshmallow", specifier = ">=1.2.1" },
+    { name = "flask-smorest", specifier = ">=0.45.0" },
+    { name = "flask-sqlalchemy", specifier = ">=3.1.1" },
+    { name = "keras", specifier = ">=3.7.0" },
+    { name = "marshmallow-enum", specifier = ">=1.5.1" },
+    { name = "marshmallow-sqlalchemy", specifier = ">=1.1.0" },
+    { name = "pillow", specifier = ">=11.0.0" },
+    { name = "pyjwt", specifier = ">=2.10.1" },
+    { name = "tensorflow-cpu", specifier = ">=2.18.0" },
+    { name = "waitress", specifier = ">=3.0.2" },
+]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "coverage", specifier = ">=7.6.8" },
+    { name = "pytest", specifier = ">=8.3.4" },
+]
+
+[[package]]
 name = "apispec"
 version = "6.7.1"
 source = { registry = "https://pypi.org/simple" }
@@ -42,49 +87,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/f3/af/4182184d3c338792894f34a62672919db7ca008c89abee9b564dd34d8029/astunparse-1.6.3.tar.gz", hash = "sha256:5ad93a8456f0d084c3456d059fd9a92cce667963232cbf763eac3bc5b7940872", size = 18290 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/2b/03/13dde6512ad7b4557eb792fbcf0c653af6076b81e5941d36ec61f7ce6028/astunparse-1.6.3-py2.py3-none-any.whl", hash = "sha256:c2652417f2c8b5bb325c885ae329bdf3f86424075c4fd1a128674bc6fba4b8e8", size = 12732 },
-]
-
-[[package]]
-name = "backend"
-version = "0.1.0"
-source = { editable = "." }
-dependencies = [
-    { name = "flask" },
-    { name = "flask-marshmallow" },
-    { name = "flask-smorest" },
-    { name = "flask-sqlalchemy" },
-    { name = "keras" },
-    { name = "marshmallow-enum" },
-    { name = "marshmallow-sqlalchemy" },
-    { name = "pillow" },
-    { name = "pyjwt" },
-    { name = "tensorflow-cpu" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "coverage" },
-    { name = "pytest" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "flask", specifier = ">=3.1.0" },
-    { name = "flask-marshmallow", specifier = ">=1.2.1" },
-    { name = "flask-smorest", specifier = ">=0.45.0" },
-    { name = "flask-sqlalchemy", specifier = ">=3.1.1" },
-    { name = "keras", specifier = ">=3.7.0" },
-    { name = "marshmallow-enum", specifier = ">=1.5.1" },
-    { name = "marshmallow-sqlalchemy", specifier = ">=1.1.0" },
-    { name = "pillow", specifier = ">=11.0.0" },
-    { name = "pyjwt", specifier = ">=2.10.1" },
-    { name = "tensorflow-cpu", specifier = ">=2.18.0" },
-]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "coverage", specifier = ">=7.6.8" },
-    { name = "pytest", specifier = ">=8.3.4" },
 ]
 
 [[package]]
@@ -940,6 +942,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/ed/63/22ba4ebfe7430b76388e7cd448d5478814d3032121827c12a2cc287e2260/urllib3-2.2.3.tar.gz", hash = "sha256:e7d814a81dad81e6caf2ec9fdedb284ecc9c73076b62654547cc64ccdcae26e9", size = 300677 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/ce/d9/5f4c13cecde62396b0d3fe530a50ccea91e7dfc1ccf0e09c228841bb5ba8/urllib3-2.2.3-py3-none-any.whl", hash = "sha256:ca899ca043dcb1bafa3e262d73aa25c465bfb49e0bd9dd5d59f1d0acba2f8fac", size = 126338 },
+]
+
+[[package]]
+name = "waitress"
+version = "3.0.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/bf/cb/04ddb054f45faa306a230769e868c28b8065ea196891f09004ebace5b184/waitress-3.0.2.tar.gz", hash = "sha256:682aaaf2af0c44ada4abfb70ded36393f0e307f4ab9456a215ce0020baefc31f", size = 179901 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/8d/57/a27182528c90ef38d82b636a11f606b0cbb0e17588ed205435f8affe3368/waitress-3.0.2-py3-none-any.whl", hash = "sha256:c56d67fd6e87c2ee598b76abdd4e96cfad1f24cacdea5078d382b1f9d7b5ed2e", size = 56232 },
 ]
 
 [[package]]

@@ -1,7 +1,7 @@
 import numpy as np
 import os
-import keras.models
-from keras.applications.mobilenet import MobileNet, preprocess_input, decode_predictions
+
+import keras
 from io import BytesIO
 from PIL import Image
 from tempfile import NamedTemporaryFile
@@ -40,11 +40,11 @@ def process_request(request_id: str) -> None:
         input_array = np.array(input_image)
         predictions = loaded_model.predict(input_array)
     else:
-        loaded_model = MobileNet()
+        loaded_model = keras.applications.MobileNet()
 
-        input_array = preprocess_input(input_image)
+        input_array = keras.applications.mobilenet.preprocess_input(input_image)
         predictions = loaded_model.predict(input_array)
-        predictions = decode_predictions(predictions)
+        predictions = keras.applications.mobilenet.decode_predictions(predictions)
 
     request.status = RequestStatus.FINISHED
     request.output = str(predictions)
@@ -60,7 +60,6 @@ def load_model_from_binary(model: Model) -> keras.Model:
     Returns:
         model: The loaded keras model
     """
-
     with NamedTemporaryFile(dir='./tests/', suffix=model.type, delete=False) as fd:
         fd.write(model.binary)
 
