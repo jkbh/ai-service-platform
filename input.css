@@ -9,6 +9,7 @@ h1 {
 h2 {
     @apply text-2xl;
 }
+
 button,
 input[type="submit"] {
     @apply rounded px-4 py-2;

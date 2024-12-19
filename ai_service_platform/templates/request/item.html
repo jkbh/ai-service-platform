@@ -4,14 +4,23 @@
     endblock %}
 </h1>
 {% endblock %} {% block content %}
-<p><a href="{{ url_for('request.get') }}">Back to Request List</a></p>
-<p>
-    <img src="{{url_for('send_uploaded_file', name=request.input_file)}}" />
-</p>
-<h3>Results:</h3>
-<ol>
-    {% for prediction in request.output %}
-    <li>{{ prediction[1] }}: {{prediction[2]}}</li>
-    {% endfor %}
-</ol>
+<div class="mt-6 flex-col">
+    <p class="mb-4">
+        <a class="underline" href="{{ url_for('request.get') }}"
+            >Back to Request List</a
+        >
+    </p>
+    <p class="mb-4">
+        <img src="{{url_for('send_uploaded_file', name=request.input_file)}}" />
+    </p>
+    <h2>Classification Probabilities</h2>
+    <ul class="list-inside list-decimal">
+        {% for prediction in request.output %}
+        <li class="list-item">
+            {{ prediction[1] }}: {{ (prediction[2].astype("float") * 100) |
+            round | int }}%
+        </li>
+        {% endfor %}
+    </ul>
+</div>
 {% endblock %}

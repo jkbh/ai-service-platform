@@ -1,5 +1,11 @@
 {% extends 'base.html' %} {% block header %}
 <h1>{% block title %}Available AI Models{% endblock %}</h1>
-{% endblock %} {% block content %} {% for model in models %}
-<span>{{model.name}}</span>
-{% endfor %} {% endblock %}
+{% endblock %} {% block content %}
+<div class="my-4">
+    <a class="underline" href="{{ url_for('index') }}">Back to index</a>
+</div>
+<ul class="list-inside list-disc">
+    {% for model in models %}
+    <li class="list-item">{{model.name}}</li>
+    {% endfor %} {% endblock %}
+</ul>
