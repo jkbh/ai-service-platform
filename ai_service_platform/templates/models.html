@@ -1,0 +1,5 @@
+{% extends 'base.html' %} {% block header %}
+<h1>{% block title %}Available AI Models{% endblock %}</h1>
+{% endblock %} {% block content %} {% for model in models %}
+<span>{{model.name}}</span>
+{% endfor %} {% endblock %}

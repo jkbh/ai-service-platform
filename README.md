@@ -8,7 +8,6 @@ Main Dependencies:
 - [flask-smorest](https://flask-smorest.readthedocs.io/en/latest/) for enhanced REST
   functionality and OpenAPI doc generation
 - [flask-sqlalchemy](https://flask-sqlalchemy.palletsprojects.com/en/2.x/) as ORM
-- [flask-marshmallow](https://flask-marshmallow.readthedocs.io/en/latest/) for serialization/deserialization
 
 The easiest way to run the server is to build the provided dockerfile and running the image with a published port 5000.
 

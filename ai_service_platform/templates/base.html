@@ -1,0 +1,44 @@
+{% import 'components.html' as components %}
+<!doctype html>
+<html lang="en" class="text-gray-900 antialiased">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>{% block title %}{% endblock %} - AI-Service-Platform</title>
+        <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+        <link
+            rel="stylesheet"
+            href="{{ url_for('static', filename='output.css') }}"
+        />
+    </head>
+    <body class="mx-auto max-w-4xl bg-gray-100">
+        <nav class="flex justify-between bg-gray-300 p-5 align-middle">
+            <h1 class="text-3xl font-bold">
+                <a href="{{ url_for('index') }}">AI-Service-Platform</a>
+            </h1>
+            <div>
+                {% if g.user %} Logged in as {{ g.user.name | title }}
+                <button
+                    class="ml-4 place-self-end border border-blue-500 text-blue-500"
+                >
+                    <a href="{{ url_for('auth.logout') }}">Log Out</a>
+                </button>
+            </div>
+            {% else %}
+            <button class="rounded bg-blue-500 text-gray-100">
+                <a href="{{ url_for('auth.login') }}">Log In</a>
+            </button>
+            {% endif %}
+        </nav>
+        <main class="flex-row p-5">
+            <header>{% block header %}{% endblock %}</header>
+            {% for message in get_flashed_messages() %}
+            <div
+                class="mt-2 w-fit rounded border border-red-500 bg-red-50 px-4 py-2 font-bold text-red-500"
+            >
+                {{ message }}
+            </div>
+            {% endfor %} {% block content %}{% endblock %}
+        </main>
+    </body>
+</html>

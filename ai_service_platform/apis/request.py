@@ -1,147 +1,141 @@
-import base64
-from uuid import uuid4
+import os
 from threading import Thread
+import uuid
 
-from flask import g, copy_current_request_context
-from flask.views import MethodView
-from flask_smorest import Blueprint, abort
-from marshmallow import pre_load, fields, ValidationError, post_dump
-from marshmallow_enum import EnumField
+from flask import (
+    Blueprint,
+    abort,
+    copy_current_request_context,
+    current_app,
+    flash,
+    g,
+    redirect,
+    render_template,
+    request,
+    url_for,
+)
+from sqlalchemy import select
+from werkzeug.utils import secure_filename
 
-from . import ma
-from ai_service_platform.core import db
-from ai_service_platform.core import models
-from ai_service_platform.core.models import Role, RequestStatus
+from ai_service_platform.core import db, models
+from ai_service_platform.core.models import Model, Role, Request
 from ai_service_platform.core.request_handler import process_request
 
 from .auth import roles_required
 
+ALLOWED_EXTENSIONS = {"png", "jpeg", "jpg"}
+
+
+def is_allowed_file(filename):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
 bp = Blueprint("request", __name__, url_prefix="/request")
 
 
-class BytesField(fields.Field):
-    """Custom marshmallow field with base64 encoding support"""
-
-    def _serialize(self, value, attr, obj, **kwargs):
-        if value is None:
-            return ""
-        return base64.b64encode(value).decode("utf-8")
-
-    def _deserialize(self, value, attr, obj, **kwargs):
-        try:
-            return base64.b64decode(value)
-        except ValueError as error:
-            raise ValidationError("Could not deserialize base64 string") from error
-
-
-class RequestSchema(ma.SQLAlchemyAutoSchema):
-    class Meta:
-        model = models.Request
-        include_fk = True
-
-    input = BytesField(required=True)
-    status = EnumField(RequestStatus)
-
-    @pre_load
-    def create_uuid(self, data, **kwargs):
-        if "public_id" not in data:
-            data["public_id"] = str(uuid4())
-        return data
-
-    @pre_load
-    def set_status(self, data, **kwargs):
-        if "status" not in data:
-            data["status"] = RequestStatus.PENDING.name
-        return data
-
-    @pre_load
-    def set_user_source(self, data, **kwargs):
-        if g.user.role == Role.SOURCE:
-            # Set user to the owner of the source that sent the request,
-            data["user_id"] = g.user.owner_id
-            data["source_id"] = g.user.public_id
-        else:
-            # Set user to request sender
-            data["user_id"] = g.user.public_id
-        return data
-
-    @post_dump
-    def status_to_lowercase(self, data, **kwargs):
-        if "status" in data:
-            data["status"] = data[
-                "status"
-            ].lower()  # temporary workaround for client compatibility
-        return data
-
-
 @bp.route("")
-class RequestList(MethodView):
-    @roles_required([Role.ADMIN, Role.USER1, Role.USER2])
-    @bp.response(200, RequestSchema(many=True))
-    def get(self):
-        if g.user.role == Role.ADMIN:
-            return models.Request.query.all()
-        return g.user.requests
+@roles_required([Role.ADMIN, Role.USER1, Role.USER2])
+def get():
+    requests = None
+    if g.user.role == Role.ADMIN:
+        requests = db.session.scalars(select(Request)).all()
+    else:
+        requests = g.user.requests
 
-    @roles_required([Role.USER1, Role.SOURCE])
-    @bp.arguments(RequestSchema)
-    @bp.response(201, RequestSchema)
-    def post(self, data):
-        source = None
-        if g.user.role is Role.SOURCE:
-            user = g.user.owner
-            source = g.user
-        else:
-            user = g.user
-
-        model = db.session.get(models.Model, data["model_id"])
-
-        if not model:
-            abort(404, "Model not found")
-
-        request = models.Request(**data, user=user, source=source, model=model)
-        request_id = request.public_id
-        db.session.add(request)
-        db.session.commit()
-
-        @copy_current_request_context
-        def process(public_id):
-            """Wrapper to process requests in parallel while staying in the same request context"""
-            process_request(public_id)
-
-        thread = Thread(target=process, kwargs={"public_id": request_id})
-        thread.start()
-
-        return request
+    models = db.session.scalars(select(Model)).all()
+    return render_template("request/list.html", requests=requests, models=models)
 
 
-@bp.route("/<public_id>")
-class Request(MethodView):
-    @roles_required([Role.USER1, Role.USER2])
-    @bp.response(200, RequestSchema)
-    def get(self, public_id):
-        request = db.session.get(models.Request, public_id)
+@bp.route("", methods=["POST"])
+@roles_required([Role.USER1, Role.SOURCE])
+def users_post():
+    # Securely handle the input file upload and storage
+    if "input" not in request.files:
+        flash("No file part")
+        return redirect(request.url)
 
-        if not request:
-            abort(404, message="Could not find request")
+    file = request.files["input"]
+    if file.filename is None:
+        flash("File has no name")
+        return redirect(request.url)
 
-        if request not in g.user.requests:
-            abort(403, message="Not allowed")
+    filename = secure_filename(file.filename)
 
-        return request
+    if not is_allowed_file(filename):
+        flash("Wrong filetype")
+        return redirect(request.url)
 
-    @bp.response(200, RequestSchema)
-    @roles_required([Role.USER1, Role.USER2])
-    def delete(self, public_id):
-        request = db.session.get(models.Request, public_id)
+    file.save(os.path.join(current_app.config["UPLOAD_FOLDER"], filename))
 
-        if not request:
-            abort(404, message="Could not find request")
+    # Set user and/or source of of http request
+    source = None
+    if g.user.role is Role.SOURCE:
+        user = g.user.owner
+        source = g.user
+    else:
+        user = g.user
 
-        if request not in g.user.requests:
-            abort(403, message="Could not delete request")
+    # Prepare request db object columns
+    data = {
+        "model_id": uuid.UUID(request.form["model"]),
+        "user_id": g.user.public_id,
+        "input_file": filename,
+    }
 
-        db.session.delete(request)
-        db.session.commit()
+    model = db.session.get(models.Model, data["model_id"])
 
-        return request
+    newRequest = models.Request(**data, user=user, source=source, model=model)
+    db.session.add(newRequest)
+    db.session.commit()
+
+    @copy_current_request_context
+    def process(public_id):
+        """Wrapper to process requests in parallel while staying in the same request context"""
+        process_request(public_id)
+
+    thread = Thread(target=process, kwargs={"public_id": newRequest.public_id})
+    thread.start()
+
+    return redirect(url_for("request.get"))
+
+
+@bp.route("/<uuid:public_id>")
+@roles_required([Role.USER1, Role.USER2])
+def get_request(public_id):
+    request = db.session.scalar(
+        select(Request).filter_by(public_id=public_id, user_id=g.user.public_id)
+    )
+
+    if not request:
+        abort(404, message="Could not find request")
+
+    return render_template("request/item.html", request=request)
+
+
+@bp.route("/<uuid:public_id>/table-status")
+@roles_required([Role.USER1, Role.USER2])
+def get_table_status(public_id):
+    request = request = db.session.scalar(
+        select(Request).filter_by(public_id=public_id, user_id=g.user.public_id)
+    )
+
+    if not request:
+        abort(404, message="Could not find request")
+
+    return render_template("request/table_status.html", request=request)
+
+
+@bp.route("/<uuid:public_id>", methods=["DELETE"])
+@roles_required([Role.USER1, Role.USER2])
+def delete(public_id):
+    request = request = db.session.scalar(
+        select(Request).filter_by(public_id=public_id, user_id=g.user.public_id)
+    )
+
+    if not request:
+        abort(404, message="Could not find request")
+
+    db.session.delete(request)
+    db.session.commit()
+
+    return ""

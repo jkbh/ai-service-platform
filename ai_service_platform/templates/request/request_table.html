@@ -1,0 +1,89 @@
+<!-- component -->
+<div class="max-w-[720px]">
+    <div
+        class="relative flex h-full w-full flex-col overflow-scroll rounded-lg bg-white bg-clip-border text-gray-700 shadow-md"
+    >
+        <table class="w-full min-w-max table-auto text-left">
+            <thead>
+                <tr class="border-b border-slate-300 bg-slate-50">
+                    <th>Input</th>
+                    <th
+                        class="p-4 text-sm font-normal leading-none text-slate-500"
+                    >
+                        Model
+                    </th>
+                    <th
+                        class="p-4 text-sm font-normal leading-none text-slate-500"
+                    >
+                        Status
+                    </th>
+                    <th
+                        class="p-4 text-sm font-normal leading-none text-slate-500"
+                    ></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for request in requests %}
+                <tr class="hover:bg-slate-50">
+                    <td class="border-b border-slate-200 p-4 py-5">
+                        <img
+                            src="{{ url_for('send_uploaded_file', name=request.input_file)}}"
+                            alt="Product 1"
+                            class="h-16 w-16 rounded object-cover"
+                        />
+                    </td>
+                    <td class="border-b border-slate-200 p-4 py-5">
+                        <p class="block text-sm font-semibold text-slate-800">
+                            {{ request.model.name }}
+                        </p>
+                    </td>
+                    <td class="border-b border-slate-200 p-4 py-5">
+                        <!-- <p class="text-sm text-slate-500">
+                            {% if request.status.name == 'FINISHED' %} {{
+                            request.status.name | title }}
+                            <button
+                                class="ml-3 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-400"
+                            >
+                                <a href="/request/{{request.public_id}}">
+                                    View Output
+                                </a>
+                            </button>
+                            {% else %} {{ request.status.name | title }} {%
+                            endif %}
+                        </p> -->
+                        <div
+                            hx-get="{{ url_for('request.get_table_status', public_id=request.public_id) }}"
+                            hx-trigger="load"
+                            hx-swap="outerHTML"
+                        ></div>
+                    </td>
+                    <td class="border-b border-slate-200 p-4 py-5">
+                        <button
+                            type="button"
+                            class="text-slate-500 hover:text-slate-700"
+                            hx-delete="{{ url_for('request.delete', public_id=request.public_id) }}"
+                            hx-confirm="Are you sure you want to delete this request?"
+                            hx-target="closest tr"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke-width="2"
+                                stroke="currentColor"
+                                class="h-6 w-6"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M6 18L18 6M6 6l12 12"
+                                />
+                            </svg>
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

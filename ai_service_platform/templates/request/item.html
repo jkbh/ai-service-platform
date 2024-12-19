@@ -1,0 +1,17 @@
+{% extends 'base.html' %} {% block header %}
+<h1>
+    {% block title %}{{request.input_file}} with {{request.model.name}}{%
+    endblock %}
+</h1>
+{% endblock %} {% block content %}
+<p><a href="{{ url_for('request.get') }}">Back to Request List</a></p>
+<p>
+    <img src="{{url_for('send_uploaded_file', name=request.input_file)}}" />
+</p>
+<h3>Results:</h3>
+<ol>
+    {% for prediction in request.output %}
+    <li>{{ prediction[1] }}: {{prediction[2]}}</li>
+    {% endfor %}
+</ol>
+{% endblock %}

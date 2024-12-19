@@ -1,10 +1,17 @@
 import os
-import warnings
-from flask import Flask
+from flask import (
+    Flask,
+    render_template,
+    flash,
+    redirect,
+    url_for,
+    g,
+    send_from_directory,
+)
+
+from ai_service_platform.core.models import Base
 
 from .core import db
-from .apis import api
-from .apis import ma
 
 from .apis.request import bp as request_bp
 from .apis.auth import bp as auth_bp
@@ -18,50 +25,56 @@ def create_app(test_config=None) -> Flask:
 
     app = Flask(__name__, instance_relative_config=True)
     app.config["SECRET_KEY"] = "dev"
-
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(
         app.instance_path, "flask-test.db"
     )
+    app.config["SQLALCHEMY_ENGINES"] = {
+        "default": "sqlite:///" + os.path.join(app.instance_path, "flask-test.db")
+    }
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
-    app.config["API_TITLE"] = "ai-service-platform"
-    app.config["API_VERSION"] = "v1"
-    app.config["OPENAPI_VERSION"] = "3.0.2"
-    app.config["OPENAPI_URL_PREFIX"] = ""
-    app.config["OPENAPI_SWAGGER_UI_PATH"] = "/swagger-ui"
-    app.config["OPENAPI_SWAGGER_UI_URL"] = (
-        "https://cdn.jsdelivr.net/npm/swagger-ui-dist/"
-    )
+    app.config["UPLOAD_FOLDER"] = os.path.join(app.instance_path, "uploads")
 
     if test_config is None:
         app.config.from_pyfile("config.py", silent=True)
     else:
         app.config.from_mapping(test_config)
 
-    try:
-        os.makedirs(app.instance_path)
-    except OSError:
-        pass
-
-    # init flask-smorest api
-    api.init_app(app)
+    # Create instance folders if they do not exist
+    os.makedirs(app.instance_path, exist_ok=True)
+    os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 
     # These warnings pop up when Schemas get instantiated with certain keywords like 'exclude' or 'only'.
     # Because these warnings are just a reminder that the modified Schemas are automatically renamed on runtime,
     # they can by ignored.
-    warnings.filterwarnings("ignore", message="Multiple schemas resolved to the name ")
+    # warnings.filterwarnings("ignore", message="Multiple schemas resolved to the name ")
 
-    api.register_blueprint(auth_bp)
-    api.register_blueprint(user_bp)
-    api.register_blueprint(request_bp)
-    api.register_blueprint(source_bp)
-    api.register_blueprint(model_bp)
+    @app.route("/index")
+    @app.route("/")
+    def index():
+        if g.user is None:
+            flash("Log in please")
+            return redirect(url_for("auth.login"))
+        return render_template("index.html")
+
+    @app.route("/uploads/<path:name>")
+    def send_uploaded_file(name):
+        return send_from_directory(app.config["UPLOAD_FOLDER"], name)
+
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(user_bp)
+    app.register_blueprint(request_bp)
+    app.register_blueprint(source_bp)
+    app.register_blueprint(model_bp)
 
     # init flask-sqlalchemy orm
+    # db.init_app(app)
+    app.config.from_prefixed_env()
     db.init_app(app)
     with app.app_context():
-        db.create_all()
+        Base.metadata.create_all(db.engine)
+        print("after create")
+
     # init flask-marshmallow object serializer/deserializer
-    ma.init_app(app)
+    # ma.init_app(app)
 
     return app

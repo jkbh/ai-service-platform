@@ -1,0 +1,33 @@
+{% extends 'base.html' %} {% block header %}
+<h1>{% block title %}Your Requests{% endblock %}</h1>
+{% endblock %} {% block content %}
+<div class="mt-6 flex flex-col gap-4">
+    {% include 'request/request_table.html' %}
+    <h2 class="mt-6 text-lg font-bold">Create New Request</h2>
+    <form class="w-full max-w-xs" method="post" enctype="multipart/form-data">
+        <div class="mb-4">
+            {% call components.select_group('model') %} {%for model in models%}
+            <option value="{{ model.public_id }}">{{model.name}}</option>
+            {% endfor %} {% endcall %}
+        </div>
+        <div class="mb-6 ">
+                {{ components.inputlabel('input') }}
+                <input class="block w-full text-sm text-slate-500
+                      file:mr-4 file:py-2 file:px-4
+                      file:rounded-lg file:text-sm
+                      file:bg-gray-50 file:text-gray-900
+                      file:border file:border-solid file:border-gray-300
+                      hover:file:border-blue-500" name="input" type="file" accept="image/png,image/jpeg" required>
+
+        </div>
+        <div class="flex items-center">
+            <input
+                type="submit"
+                value="Create Request"
+                class="focus:shadow-outline text-md bg-blue-500 text-white shadow hover:bg-blue-400"
+            />
+        </div>
+    </form>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends 'base.html' %} {% block header %}
+<h1>{% block title %}Hello {{g.user.name | title }}{% endblock %}</h1>
+{% endblock %} {% block content %} {% if g.user.role.name == "ADMIN" %}
+<a href="{{ url_for('user.user') }}">Admin Area</a>
+{% endif%} {% if g.user.role.name == "USER1" %}
+<h2 class="mb-2 mt-4">Areas</h2>
+<ul class="list-inside list-disc space-y-1">
+    <li>
+        <a class="underline" href="{{ url_for('request.get') }}"
+            >Your Requests</a
+        >
+    </li>
+    <li>
+        <a class="underline" href="{{ url_for('model.model') }}">Model Info</a>
+    </li>
+</ul>
+{% endif%} {% endblock %}

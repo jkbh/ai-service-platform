@@ -1,0 +1,9 @@
+.venv
+instance
+dist
+.git
+tests
+.coveragerc
+.coverage
+.gitignore
+.ropeproject

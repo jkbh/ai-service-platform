@@ -1,0 +1,11 @@
+name: ai-service-platform
+
+services:
+  server:
+    build: ./
+    environment:
+      SCRIPT_NAME: ""
+    ports:
+      - "8080:8080"
+    restart: always
+    command: waitress-serve --host 0.0.0.0 --call ai_service_platform:create_app
