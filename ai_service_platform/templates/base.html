@@ -8,37 +8,57 @@
         <script src="https://unpkg.com/htmx.org@2.0.4"></script>
         <link
             rel="stylesheet"
-            href="{{ url_for('static', filename='output.css') }}"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.indigo.min.css"
+        />
+        <link
+            rel="stylesheet"
+            href="{{ url_for('static', filename='custom.css') }}"
         />
     </head>
-    <body class="mx-auto max-w-4xl bg-gray-100">
-        <nav class="flex justify-between bg-gray-300 p-5 align-middle">
-            <h1 class="text-3xl font-bold">
-                <a href="{{ url_for('index') }}">AI-Service-Platform</a>
-            </h1>
-            <div>
-                {% if g.user %} Logged in as {{ g.user.name | title }}
-                <button
-                    class="ml-4 place-self-end border border-blue-500 text-blue-500"
-                >
-                    <a href="{{ url_for('auth.logout') }}">Log Out</a>
-                </button>
-            </div>
-            {% else %}
-            <button class="rounded bg-blue-500 text-gray-100">
-                <a href="{{ url_for('auth.login') }}">Log In</a>
-            </button>
-            {% endif %}
-        </nav>
-        <main class="flex-row p-5">
+    <body class="container">
+        <header>
+            <nav>
+                <ul>
+                    <li>
+                        <a href="{{ url_for('index') }}"
+                            ><strong>AI-Service-Platform</strong></a
+                        >
+                    </li>
+                </ul>
+                <ul>
+                    <li>
+                        {% if g.user %} Logged in as {{ g.user.name | title }}
+                    </li>
+                    <li>
+                        <a
+                            class="outline"
+                            role="button"
+                            href="{{ url_for('auth.logout') }}"
+                        >
+                            Logout
+                        </a>
+                    </li>
+
+                    {% else %}
+                    <li>
+                        <a role="button" href="{{ url_for('auth.login') }}"
+                            >Login</a
+                        >
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </header>
+        <main>
             <header>{% block header %}{% endblock %}</header>
             {% for message in get_flashed_messages() %}
-            <div
-                class="mt-2 w-fit rounded border border-red-500 bg-red-50 px-4 py-2 font-bold text-red-500"
-            >
-                {{ message }}
-            </div>
+            <article class="warning">{{ message }}</article>
             {% endfor %} {% block content %}{% endblock %}
         </main>
+        <footer></footer>
     </body>
 </html>

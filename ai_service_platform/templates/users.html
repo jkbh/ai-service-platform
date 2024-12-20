@@ -2,10 +2,13 @@
 <h1>{% block title %}List of Users{% endblock %}</h1>
 {% endblock %} {% block content %}
 <table>
-    <tr>
-        <th>Name</th>
-        <th>Role</th>
-    </tr>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Role</th>
+            <th></th>
+        </tr>
+    </thead>
     {% for user in users %}
     <tr>
         <td>{{user.name}}</td>
@@ -16,31 +19,24 @@
                 hx-confirm="Really delete this account?"
                 hx-target="closest tr"
             >
-                &#128465;
+                <i class="fa fa-trash" aria-hidden="true"></i>
             </button>
         </td>
     </tr>
     {% endfor %}
 </table>
-<hr />
-<h2 class="mb-6 text-lg font-bold">Create User</h2>
-<form class="w-full max-w-xs" method="post">
-    <div class="mb-4">{{ components.input_group('username') }}</div>
-    <div class="mb-4">
-        {{ components.input_group('password', type='password')}}
-    </div>
-    <div class="mb-6">
-        {% call components.select_group('role') %} {%for role in roles%}
+<h2>Create User</h2>
+<form method="post">
+    <label for="username">Username</label>
+    <input name="username" required />
+    <label for="pasword">Password</label>
+    <input name="password" type="password" required />
+    <select name="role" required>
+        {%for role in roles%}
         <option value="{{role.name}}">{{role.name}}</option>
-        {%endfor %} {% endcall %}
-    </div>
-    <div class="flex items-center">
-        <input
-            type="submit"
-            value="Create User"
-            class="focus:shadow-outline text-md rounded bg-blue-500 p-1 px-4 py-2 text-white shadow hover:bg-blue-400"
-        />
-    </div>
+        {%endfor %}
+    </select>
+    <input type="submit" value="Create User" />
 </form>
 
 {% endblock %}
