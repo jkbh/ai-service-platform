@@ -1,16 +1,16 @@
+:root {
+}
+
 #main-layout-container {
     grid-template-columns: 15% auto;
 }
 
 .warning {
+    color: black;
     background-color: lightpink;
     border: 1px solid red;
 }
 
-table svg {
-    max-height: 3em;
-    max-width: 3em;
-}
 .img-icon {
     border-radius: 0.15em;
     max-width: 30em;

@@ -1,5 +1,34 @@
 {% extends 'base.html' %} {% block header %} {% endblock %} {% block content %}
-<div id="main-layout-container" class="grid">
+<nav>
+    <ul>
+        <li>
+            <a
+                aria-current="{{ 'page' if request.path == url_for('index') else ''}}"
+                href="{{ url_for('index') }}"
+                >Home</a
+            >
+        </li>
+        {% if g.user.role.name == "ADMIN" %}
+        <li><a href="{{ url_for('user.user') }}">Admin Area</a></li>
+        {% endif%} {% if g.user.role.name == "USER1" %}
+        <li>
+            <a
+                aria-current="{{ 'page' if request.path == url_for('request.get') else ''}}"
+                href="{{ url_for('request.get') }}"
+                >Requests</a
+            >
+        </li>
+        <li>
+            <a
+                aria-current="{{ 'page' if request.path == url_for('model') else ''}}"
+                href="{{ url_for('model.model') }}"
+                >Models</a
+            >
+        </li>
+    </ul>
+</nav>
+{% endif%}
+<!-- <div id="main-layout-container" class="grid">
     <aside>
         <nav>
             <ul>
@@ -20,7 +49,7 @@
         </nav>
     </aside>
     <section>
-        <h1>{% block title %}Welcome {{g.user.name | title }}{% endblock %}</h1>
+
     </section>
-</div>
+</div> -->
 {% endblock %}
