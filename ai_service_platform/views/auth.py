@@ -13,10 +13,10 @@ from sqlalchemy import select
 from werkzeug.security import check_password_hash
 from functools import wraps
 
-from ai_service_platform.core.models import User, Role
-from ai_service_platform.core import db
+from ai_service_platform.models.models import User, Role
+from ai_service_platform.models import db
 
-bp = Blueprint("auth", __name__, url_prefix="/auth")
+bp = Blueprint("auth", __name__, template_folder="templates/auth", url_prefix="/auth")
 
 
 def roles_required(allowed: list[Role]):

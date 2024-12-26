@@ -9,15 +9,15 @@ from flask import (
     send_from_directory,
 )
 
-from ai_service_platform.core.models import Base
+from ai_service_platform.models.models import Base
 
-from .core import db
+from .models import db
 
-from .apis.request import bp as request_bp
-from .apis.auth import bp as auth_bp
-from .apis.source import bp as source_bp
-from .apis.model import bp as model_bp
-from .apis.user import bp as user_bp
+from .views.request import bp as request_bp
+from .views.auth import bp as auth_bp
+from .views.source import bp as source_bp
+from .views.model import bp as model_bp
+from .views.user import bp as user_bp
 
 
 def create_app(test_config=None) -> Flask:

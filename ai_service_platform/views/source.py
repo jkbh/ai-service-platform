@@ -1,9 +1,9 @@
 from flask import abort, g, Blueprint
 from flask.views import MethodView
 
-from ai_service_platform.core import db
-from ai_service_platform.core import models
-from ai_service_platform.core.models import Role
+from ai_service_platform.models import db
+from ai_service_platform.models import models
+from ai_service_platform.models.models import Role
 from .auth import roles_required
 
 bp = Blueprint("source", __name__, url_prefix="/source")

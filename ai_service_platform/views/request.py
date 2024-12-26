@@ -17,9 +17,9 @@ from flask import (
 from sqlalchemy import select
 from werkzeug.utils import secure_filename
 
-from ai_service_platform.core import db, models
-from ai_service_platform.core.models import Model, Role, Request
-from ai_service_platform.core.request_handler import process_request
+from ai_service_platform.models import db, models
+from ai_service_platform.models.models import Model, Role, Request
+from ai_service_platform.models.request_handler import process_request
 
 from .auth import roles_required
 
@@ -65,6 +65,8 @@ def users_post():
         flash("Wrong filetype")
         return redirect(request.url)
 
+    input_id = uuid.uuid4()
+    filename = f"{input_id}_{filename}"
     file.save(os.path.join(current_app.config["UPLOAD_FOLDER"], filename))
 
     # Set user and/or source of of http request
@@ -79,6 +81,7 @@ def users_post():
     data = {
         "model_id": uuid.UUID(request.form["model"]),
         "user_id": g.user.public_id,
+        "input_name": filename,
         "input_file": filename,
     }
 

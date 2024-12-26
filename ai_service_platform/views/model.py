@@ -2,8 +2,8 @@ from flask import render_template, Blueprint
 from sqlalchemy import select
 
 from .auth import roles_required
-from ai_service_platform.core.models import Role, Model
-from ai_service_platform.core import db
+from ai_service_platform.models.models import Role, Model
+from ai_service_platform.models import db
 
 bp = Blueprint("model", __name__, url_prefix="/model")
 

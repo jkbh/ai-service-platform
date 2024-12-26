@@ -1,4 +1,4 @@
-from ai_service_platform.core.request_handler import *
+from ai_service_platform.models.request_handler import *
 
 
 def test_load_model_from_binary():

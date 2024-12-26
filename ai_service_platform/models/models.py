@@ -96,6 +96,7 @@ class Request(Base):
         ForeignKey("model.public_id", ondelete="CASCADE")
     )
     patient_id: Mapped[Optional[str]]
+    # input_name: Mapped[str]
     input_file: Mapped[str]
     output: Mapped[Optional[bytes_pickle]]
     status: Mapped[RequestStatus] = mapped_column(default=RequestStatus.PENDING)

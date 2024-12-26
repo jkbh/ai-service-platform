@@ -10,9 +10,9 @@ from flask import (
     flash,
 )
 
-from ai_service_platform.core import db
-from ai_service_platform.core import models
-from ai_service_platform.core.models import Role, User
+from ai_service_platform.models import db
+from ai_service_platform.models import models
+from ai_service_platform.models.models import Role, User
 from .auth import roles_required
 
 

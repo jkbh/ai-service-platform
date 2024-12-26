@@ -1,64 +1,48 @@
-{% import 'components.html' as components %}
 <!doctype html>
 <html lang="en" class="text-gray-900 antialiased">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>{% block title %}{% endblock %} - AI-Service-Platform</title>
-        <script src="https://unpkg.com/htmx.org@2.0.4"></script>
-        <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
-        />
-        <link
-            rel="stylesheet"
-            href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.indigo.min.css"
-        />
-        <link
-            rel="stylesheet"
-            href="{{ url_for('static', filename='custom.css') }}"
-        />
-    </head>
-    <body class="container">
-        <header>
-            <nav>
-                <ul>
-                    <li>
-                        <a href="{{ url_for('index') }}"
-                            ><strong>AI-Service-Platform</strong></a
-                        >
-                    </li>
-                </ul>
-                <ul>
-                    <li>
-                        {% if g.user %} Logged in as {{ g.user.name | title }}
-                    </li>
-                    <li>
-                        <a
-                            class="outline"
-                            role="button"
-                            href="{{ url_for('auth.logout') }}"
-                        >
-                            Logout
-                        </a>
-                    </li>
 
-                    {% else %}
-                    <li>
-                        <a role="button" href="{{ url_for('auth.login') }}"
-                            >Login</a
-                        >
-                    </li>
-                    {% endif %}
-                </ul>
-            </nav>
-        </header>
-        <main>
-            <header>{% block header %}{% endblock %}</header>
-            {% for message in get_flashed_messages() %}
-            <article class="warning">{{ message }}</article>
-            {% endfor %} {% block content %}{% endblock %}
-        </main>
-        <footer></footer>
-    </body>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}{% endblock %} - AI-Service-Platform</title>
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.indigo.min.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='custom.css') }}" />
+</head>
+
+<body class="container">
+    <header>
+        <nav>
+            <ul>
+                <li>
+                    <a href="{{ url_for('index') }}"><strong>AI-Service-Platform</strong></a>
+                </li>
+            </ul>
+            <ul>
+                {% if g.user %}
+                <li>
+                    <a class="outline" role="button" href="{{ url_for('auth.logout') }}">
+                        Logout
+                    </a>
+                </li>
+
+                {% else %}
+                <li>
+                    <a role="button" href="{{ url_for('auth.login') }}">Login</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <header>{% block header %}{% endblock %}</header>
+        {% for message in get_flashed_messages() %}
+        <article class="warning">{{ message }}</article>
+        {% endfor %}
+        {% block content %}{% endblock %}
+    </main>
+    <footer></footer>
+</body>
+
 </html>
