@@ -69,7 +69,7 @@ def users_post():
     filename = f"{input_id}_{filename}"
     file.save(os.path.join(current_app.config["UPLOAD_FOLDER"], filename))
 
-    # Set user and/or source of of http request
+    # Set user and/or source of http request
     source = None
     if g.user.role is Role.SOURCE:
         user = g.user.owner
@@ -81,7 +81,7 @@ def users_post():
     data = {
         "model_id": uuid.UUID(request.form["model"]),
         "user_id": g.user.public_id,
-        "input_name": filename,
+        # "input_name": filename,
         "input_file": filename,
     }
 
@@ -118,7 +118,7 @@ def get_request(public_id):
 @bp.route("/<uuid:public_id>/table-status")
 @roles_required([Role.USER1, Role.USER2])
 def get_table_status(public_id):
-    request = request = db.session.scalar(
+    request = db.session.scalar(
         select(Request).filter_by(public_id=public_id, user_id=g.user.public_id)
     )
 
@@ -131,7 +131,7 @@ def get_table_status(public_id):
 @bp.route("/<uuid:public_id>", methods=["DELETE"])
 @roles_required([Role.USER1, Role.USER2])
 def delete(public_id):
-    request = request = db.session.scalar(
+    request = db.session.scalar(
         select(Request).filter_by(public_id=public_id, user_id=g.user.public_id)
     )
 

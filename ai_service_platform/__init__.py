@@ -70,9 +70,9 @@ def create_app(test_config=None) -> Flask:
     # db.init_app(app)
     app.config.from_prefixed_env()
     db.init_app(app)
+
     with app.app_context():
         Base.metadata.create_all(db.engine)
-        print("after create")
 
     # init flask-marshmallow object serializer/deserializer
     # ma.init_app(app)

@@ -1,24 +1,29 @@
 {% extends 'base.html' %} {% block header %}
-<h1>
-    {% block title %}{{request.input_file}} with {{request.model.name}}{%
-    endblock %}
-</h1>
+  <h1>
+    {% block title %} {{ request.model.name }} Results {% endblock %}
+  </h1>
 {% endblock %} {% block content %}
-<div>
+  <div>
     <p>
-        <a href="{{ url_for('request.get') }}">Back to Request List</a>
+      <a href="{{ url_for('request.get') }}">Back to Request List</a>
     </p>
-    <p>
-        <img src="{{url_for('send_uploaded_file', name=request.input_file)}}" />
-    </p>
-    <h2>Classification Probabilities</h2>
-    <ol>
-        {% for prediction in request.output %}
-        <li>
-            {{ prediction[1] }}: {{ (prediction[2].astype("float") * 100) |
+    <div class="grid">
+      <div>
+        <p>
+          <img src="{{ url_for('send_uploaded_file', name=request.input_file) }}" alt="input image" />
+        </p>
+      </div>
+      <div>
+        <h2>Classification Probabilities</h2>
+        <ol>
+          {% for prediction in request.output %}
+            <li>
+              {{ prediction["class"] }}: {{ (prediction["probability"] * 100) |
             round | int }}%
-        </li>
-        {% endfor %}
-    </ol>
-</div>
+            </li>
+          {% endfor %}
+        </ol>
+      </div>
+    </div>
+  </div>
 {% endblock %}

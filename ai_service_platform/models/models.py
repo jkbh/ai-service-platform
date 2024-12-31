@@ -111,9 +111,7 @@ class Model(Base):
         primary_key=True, default=uuid.uuid4
     )
     name: Mapped[str] = mapped_column(unique=True)
-    binary: Mapped[Optional[bytes]]
-    config: Mapped[dict[str, Any]]
-    type: Mapped[str]
+    server_model_name: Mapped[str] = mapped_column(unique=True)
     requests: Mapped[list[Request]] = relationship(
         back_populates="model", cascade="all, delete"
     )
@@ -126,11 +124,17 @@ def create_models(*args, **kwargs):
     db.session.add(
         Model(
             public_id=uuid.uuid4(),
-            name="MobileNet",
-            config={"shape": (224, 224), "expand_dims": True},
-            type="keras",
-        )
-    )
+            name="SqueezeNet",
+            server_model_name="squeezenet",
+        ))
+
+    db.session.add(
+        Model(
+            public_id=uuid.uuid4(),
+            name="FERPlus",
+            server_model_name="FERPlus",
+        ))
+
     db.session.commit()
 
 
