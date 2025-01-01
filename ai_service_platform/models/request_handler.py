@@ -23,7 +23,7 @@ def process_request(request_id: str) -> None:
     db.session.commit()
 
     input_path = os.path.join(current_app.config["UPLOAD_FOLDER"], request.input_file)
-    prediction_url = f"http://localhost:8080/predictions/{request.model.server_model_name}"
+    prediction_url = f"http://multi-model-server:8080/predictions/{request.model.server_model_name}"
 
     with open(input_path, "rb") as file:
         response = requests.post(prediction_url, data=file).json()
